@@ -44,7 +44,7 @@ const subscriptionSchema = new mongoose.Schema(
     },
     paymentMethod: {
       type: String,
-      enum: ["credit_card", "debit_card", "paypal", "bank_transfer", "other"],
+      enum: ["Credit Card", "Debit Card", "paypal", "Bank Transfer", "other"],
       required: [true, "Payment Method is required"],
       trim: true,
     },
@@ -81,8 +81,7 @@ const subscriptionSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-//auto calculate renewal date based on frequency
-subscriptionSchema.pre("save", function () {
+subscriptionSchema.pre("save", async function () {
   if (!this.renewalDate) {
     const renewalPeriods = {
       daily: 1,
@@ -99,9 +98,9 @@ subscriptionSchema.pre("save", function () {
 
   if (this.renewalDate < new Date()) {
     this.status = "expired";
-
-    next();
   }
+
+  // No next() needed in async functions
 });
 
 const Subscription = mongoose.model("Subscription", subscriptionSchema);
